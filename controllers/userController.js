@@ -64,6 +64,12 @@ const allConnections = async (req, res) => {
 };
 
 const feed = async (req, res) => {
+  //pagination
+  const page = parseInt(req.query.page) || 1;
+  let limit = parseInt(req.query.limit) || 10;
+  limit = limit > 50 ? 50 : limit;
+  const skip = limit * (page - 1);
+
   try {
     const loggedInUser = req.user;
 
@@ -94,9 +100,12 @@ const feed = async (req, res) => {
         { _id: { $nin: arrayOfHideUsersFromFeed } },
         { _id: { $ne: loggedInUser._id } },
       ],
-    }).select(USER_SAFE_DATA);
+    })
+      .select(USER_SAFE_DATA)
+      .skip(skip)
+      .limit(limit);
 
-    // also do
+    // also can do
     // const userInFeed = await User.find({
     // _id: {
     //   $nin: [...hideUsersFromFeed],
@@ -106,7 +115,11 @@ const feed = async (req, res) => {
     res.status(200).json({
       message: userInFeed,
     });
-  } catch (err) {}
+  } catch (err) {
+    res.status(500).json({
+      error: "There are no users found",
+    });
+  }
 };
 
 module.exports = { allRequests, allConnections, feed };
