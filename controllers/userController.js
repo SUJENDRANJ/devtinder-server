@@ -1,4 +1,5 @@
 const ConnectionRequest = require("../models/ConnectionRequest");
+const User = require("../models/User");
 
 // const USER_SAFE_DATA = ["firstName", "lastName"]; //or String
 const USER_SAFE_DATA = "firstName lastName photoUrl age gender about skills";
@@ -62,4 +63,50 @@ const allConnections = async (req, res) => {
   }
 };
 
-module.exports = { allRequests, allConnections };
+const feed = async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+
+    //connection
+    const connectionRequest = await ConnectionRequest.find({
+      $or: [
+        { fromUserId: loggedInUser._id },
+        {
+          toUserId: loggedInUser._id,
+        },
+      ],
+    }) //No need for $and explicitly, MongoDB automatically treats multiple key-value conditions as AND.
+      // .populate("fromUserId toUserId")
+      .select("fromUserId toUserId");
+
+    const hideUsersFromFeed = new Set();
+
+    connectionRequest.forEach((req) => {
+      hideUsersFromFeed.add(req.fromUserId.toString());
+      hideUsersFromFeed.add(req.toUserId.toString());
+    });
+
+    const arrayOfHideUsersFromFeed = Array.from(hideUsersFromFeed); //or
+    // const arrayOfHideUsersFromFeed = [...hideUsersFromFeed]; /
+
+    const userInFeed = await User.find({
+      $and: [
+        { _id: { $nin: arrayOfHideUsersFromFeed } },
+        { _id: { $ne: loggedInUser._id } },
+      ],
+    }).select(USER_SAFE_DATA);
+
+    // also do
+    // const userInFeed = await User.find({
+    // _id: {
+    //   $nin: [...hideUsersFromFeed],
+    //   $ne: loggedInUser._id
+    // }
+
+    res.status(200).json({
+      message: userInFeed,
+    });
+  } catch (err) {}
+};
+
+module.exports = { allRequests, allConnections, feed };
