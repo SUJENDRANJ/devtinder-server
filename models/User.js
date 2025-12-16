@@ -68,7 +68,8 @@ const userSchema = new Schema(
 
     photoUrl: {
       type: String,
-      default: "https://suje.netlify.app/suje.png",
+      default:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSm0gw1Qon8aQmHbrqQD4Z1-LKICaMGlp1HXA&s",
       validate: {
         validator: validator.isURL, // another method
       },
