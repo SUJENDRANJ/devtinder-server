@@ -18,11 +18,7 @@ const PORT = process.env.PORT;
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://devtinder-developer-u0bu.bolt.host",
-      "https://devtinder-site.netlify.app/",
-    ],
+    origin: ["http://localhost:5173", "https://devtinder-site.netlify.app"],
 
     credentials: true,
   })
