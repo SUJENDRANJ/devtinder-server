@@ -3,6 +3,7 @@ require("dotenv").config();
 require("colors");
 const configDB = require("./config/db");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
@@ -14,6 +15,13 @@ app.use(express.json());
 app.use(cookieParser());
 
 const PORT = process.env.PORT;
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
