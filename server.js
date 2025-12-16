@@ -21,6 +21,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://devtinder-developer-u0bu.bolt.host",
+      "https://devtinder-site.netlify.app/",
     ],
 
     credentials: true,
