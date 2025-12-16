@@ -28,6 +28,11 @@ const registerUser = async (req, res) => {
     res.cookie("token", token, {
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000), //must always be a Date object
       //* maxAge: 24 * 60 * 60 * 1000, // 1 day in ms
+
+      httpOnly: true,
+      secure: true, // REQUIRED in production
+      sameSite: "none", // REQUIRED for cross-site
+      path: "/",
     });
 
     res.status(201).json(savedUser);
@@ -58,6 +63,11 @@ const loginUser = async (req, res) => {
     //cookie & token
     res.cookie("token", generateToken(existingUser._id), {
       maxAge: 24 * 60 * 60 * 1000,
+
+      httpOnly: true,
+      secure: true, // REQUIRED in production
+      sameSite: "none", // REQUIRED for cross-site
+      path: "/",
     });
 
     res
