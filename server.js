@@ -4,11 +4,14 @@ require("colors");
 const configDB = require("./config/db");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const http = require("http");
+const initializeSocket = require("./utils/socket");
 
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const connectionRequestRouter = require("./routes/connectionRequest");
 const userRouter = require("./routes/user");
+const chatRouter = require("./routes/chat");
 
 const app = express();
 app.use(express.json());
@@ -28,21 +31,15 @@ app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
 app.use("/request", connectionRequestRouter);
 app.use("/user", userRouter);
+app.use("/chat", chatRouter);
 
-// (async function () {
-//   const user = new User({
-//     name: "Diana",
-//     emailId: "didfddana@gmail.com",
-//     password: "Diana@123",
-//     age: 16,
-//     gender: "female",
-//   });
-//   await user.save();
-// })();
+// socket.io
+const server = http.createServer(app);
+initializeSocket(server);
 
 configDB()
   .then(() => {
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Server Started at PORT - ${PORT}`.yellow);
     });
   })
